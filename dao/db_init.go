@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"douyin/model"
 	"douyin/pkg/constrant"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -10,6 +11,13 @@ import (
 
 type manager struct {
 	db *gorm.DB
+}
+
+type Manager interface {
+	Register(user model.Userinfo) error
+	IsExist(username string) (model.Userinfo, error)
+	//GetPwd(pwd string) ([]byte, error)
+	//ComparePwd(pwd1 string, pwd2 string) bool
 }
 
 var Mgr Manager

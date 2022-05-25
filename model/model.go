@@ -18,6 +18,7 @@ type Video struct {
 }
 
 type Comment struct {
+	gorm.Model
 	Id         int64    `json:"id,omitempty"`
 	User       Userinfo `json:"user"`
 	Content    string   `json:"content,omitempty"`
