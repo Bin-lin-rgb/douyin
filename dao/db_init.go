@@ -14,10 +14,17 @@ type manager struct {
 }
 
 type Manager interface {
+	// Register 注册
 	Register(user model.Userinfo) error
+	// IsExist 判断是否用户是否已存在
 	IsExist(username string) (model.Userinfo, error)
-	//GetPwd(pwd string) ([]byte, error)
-	//ComparePwd(pwd1 string, pwd2 string) bool
+
+	// CommentAction 评论操作
+	CommentAction() error
+	// AddComment 添加评论
+	AddComment(comment model.Comment) error
+	// GetUserInfo 获取用户信息
+	GetUserInfo(userId int64, userinfo *model.Userinfo) error
 }
 
 var Mgr Manager

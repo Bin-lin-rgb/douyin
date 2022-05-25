@@ -5,13 +5,12 @@ import (
 	"douyin/model"
 )
 
-type commentManager interface {
-	CommentAction(comment model.Comment) error
+func (mgr manager) CommentAction() error {
+	return nil
 }
 
-func (mgr manager) CommentAction(userinfo model.Userinfo) error {
-	result := mgr.db.Create(&userinfo)
+func (mgr manager) AddComment(comment model.Comment) error {
+
+	result := mgr.db.Create(&comment)
 	return result.Error
-
 }
-

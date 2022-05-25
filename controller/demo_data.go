@@ -17,7 +17,7 @@ var DemoVideos = []model.Video{
 var DemoComments = []model.Comment{
 	{
 		Id:         1,
-		User:       DemoUser,
+		Commenter:  DemoUser,
 		Content:    "Test Comment",
 		CreateDate: "05-01",
 	},

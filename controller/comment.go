@@ -1,9 +1,13 @@
 package controller
 
 import (
+	"douyin/dao"
 	"douyin/model"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -26,11 +30,46 @@ func CommentAction(c *gin.Context) {
 		//发布评论
 		if actionType == "1" {
 			text := c.Query("comment_text")
-			//videoId := c.Query("video_id")
-			//userId := c.Query("user_id")
+			videoId := c.Query("video_id")
+			userId := c.Query("user_id")
+
+			fmt.Println("userId", userId)
+			fmt.Println("videoId", videoId)
+
+			uid, err := strconv.ParseInt(userId, 10, 64)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			vid, err := strconv.ParseInt(videoId, 10, 64)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+
+			comment := model.Comment{
+				Content:   text,
+				Commenter: model.Userinfo{Id: uid},
+				Video:     model.Video{Id: vid},
+			}
+
+			err = dao.Mgr.AddComment(comment)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+
+			userinfo := model.Userinfo{}
+
+			err = dao.Mgr.GetUserInfo(uid, &userinfo)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+
 			c.JSON(http.StatusOK, CommentActionResponse{Response: model.Response{StatusCode: 0},
 				Comment: model.Comment{
-					User:       user,
+					Commenter:  user,
 					Content:    text,
 					CreateDate: time.Now().Format("01-02"),
 				}})
