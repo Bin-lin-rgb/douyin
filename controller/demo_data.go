@@ -1,6 +1,6 @@
 package controller
 
-import "simple-demo/model"
+import "douyin/model"
 
 var DemoVideos = []model.Video{
 	{

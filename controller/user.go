@@ -1,12 +1,13 @@
 package controller
 
 import (
+	"douyin/dao"
+	"douyin/model"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
-	"simple-demo/dao"
-	"simple-demo/model"
 	"sync/atomic"
 )
 
@@ -50,20 +51,24 @@ func Register(c *gin.Context) {
 
 	//usersLoginInfo[username]=username
 
+	// 查找用户是否存在
 	user, err := dao.Mgr.IsExist(username)
 	if err != nil {
 		log.Println(err)
 	}
 
 	if user.Name != "" {
-		fmt.Println("存在", user)
+		fmt.Println("已存在！")
 		return
 	}
 
+	encrypted, _ := GetPwd(password)
+
 	userinfo := model.Userinfo{
 		Name:     username,
-		Password: password,
+		Password: string(encrypted),
 	}
+
 	err = dao.Mgr.Register(userinfo)
 	if err != nil {
 		log.Println(err)
@@ -92,6 +97,23 @@ func Login(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 
+	// 查找用户是否存在
+	user, err := dao.Mgr.IsExist(username)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if user.Name == "" {
+		fmt.Println("不存在", user)
+
+	}
+
+	if ComparePwd(user.Password, password) {
+		fmt.Println("登陆成功！")
+	} else {
+		fmt.Println("密码错误！")
+	}
+
 	token := username + password
 
 	if user, exist := usersLoginInfo[token]; exist {
@@ -119,5 +141,20 @@ func UserInfo(c *gin.Context) {
 		c.JSON(http.StatusOK, UserResponse{
 			Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		})
+	}
+}
+
+func GetPwd(pwd string) ([]byte, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
+	return hash, err
+}
+
+func ComparePwd(pwd1 string, pwd2 string) bool {
+	// Returns true on success, pwd1 is for the database.
+	err := bcrypt.CompareHashAndPassword([]byte(pwd1), []byte(pwd2))
+	if err != nil {
+		return false
+	} else {
+		return true
 	}
 }

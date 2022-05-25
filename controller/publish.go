@@ -1,11 +1,11 @@
 package controller
 
 import (
+	"douyin/model"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
-	"simple-demo/model"
 )
 
 type VideoListResponse struct {

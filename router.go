@@ -1,8 +1,8 @@
 package main
 
 import (
+	"douyin/controller"
 	"github.com/gin-gonic/gin"
-	"simple-demo/controller"
 )
 
 func initRouter(r *gin.Engine) {

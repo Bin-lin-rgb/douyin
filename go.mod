@@ -1,4 +1,4 @@
-module simple-demo
+module douyin
 
 go 1.17
 

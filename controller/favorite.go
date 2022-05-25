@@ -1,9 +1,9 @@
 package controller
 
 import (
+	"douyin/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"simple-demo/model"
 )
 
 // FavoriteAction no practical effect, just check if token is valid
