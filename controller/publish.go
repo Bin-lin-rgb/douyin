@@ -16,11 +16,22 @@ type VideoListResponse struct {
 // Publish check token then save upload file to public directory
 func Publish(c *gin.Context) {
 	token := c.PostForm("token")
+	//title := c.PostForm("title")
 
-	if _, exist := usersLoginInfo[token]; !exist {
-		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+	user, v := TokenIsValid(token)
+	if !v {
+		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "token is not valid."})
 		return
 	}
+
+	//video := model.Video{
+	//	Author:        user,
+	//	PlayUrl:       "",
+	//	CoverUrl:      "",
+	//	FavoriteCount: 0,
+	//	CommentCount:  0,
+	//	IsFavorite:    false,
+	//}
 
 	data, err := c.FormFile("data")
 	if err != nil {
@@ -32,7 +43,7 @@ func Publish(c *gin.Context) {
 	}
 
 	filename := filepath.Base(data.Filename)
-	user := usersLoginInfo[token]
+	//user := usersLoginInfo[token]
 	finalName := fmt.Sprintf("%d_%s", user.Id, filename)
 	saveFile := filepath.Join("./public/", finalName)
 	if err := c.SaveUploadedFile(data, saveFile); err != nil {
@@ -51,6 +62,7 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
+
 	c.JSON(http.StatusOK, VideoListResponse{
 		Response: model.Response{
 			StatusCode: 0,

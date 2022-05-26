@@ -1,5 +1,8 @@
 package constrant
 
+import "time"
+
 const (
-	MySQLDefaultDSN = "root:123456@tcp(120.25.172.211)/douyin?charset=utf8&parseTime=True&loc=Local"
+	TokenExpireDuration = time.Hour * 2
+	MySQLDefaultDSN     = "root:123456@tcp(120.25.172.211)/douyin?charset=utf8&parseTime=True&loc=Local"
 )
