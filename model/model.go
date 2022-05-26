@@ -19,19 +19,21 @@ type Video struct {
 
 type Comment struct {
 	gorm.Model
-	Id         int64    `gorm:"column:id;" json:"id,omitempty"`
-	Commenter  Userinfo `gorm:"embedded;embeddedPrefix:user_" json:"user,omitempty"`
-	Video      Video    `gorm:"embedded;embeddedPrefix:video_"`
-	Content    string   `json:"content,omitempty"`
-	CreateDate string   `json:"create_date,omitempty"`
+	Id          int64    `json:"id,omitempty" gorm:"column:id;" `
+	CommenterId int64    `json:",omitempty" gorm:"column:user_id;"`
+	VideoId     int64    `json:",omitempty" gorm:"column:video_id;"`
+	Content     string   `json:"content,omitempty" gorm:"column:content;"`
+	CreateDate  string   `json:"create_date,omitempty" gorm:"-" `
+	Commenter   Userinfo `json:"user,omitempty" gorm:"foreignKey:CommenterId;references:id;-;"`
+	Video       Video    `json:"video,omitempty" gorm:"foreignKey:VideoId;references:id;-;"`
 }
 
 type Userinfo struct {
 	gorm.Model
-	Id            int64  `gorm:"primary_key;column:id;type:int;not null" json:"id,omitempty"`
-	Name          string `gorm:"column:name;type:varchar;not null" json:"name,omitempty"`
-	Password      string `json:"password,omitempty"`
-	FollowCount   int64  `json:"follow_count,omitempty"`
-	FollowerCount int64  `json:"follower_count,omitempty"`
-	IsFollow      bool   `json:"is_follow,omitempty"`
+	Id            int64  `json:"id,omitempty" gorm:"primary_key;column:id;type:int;not null" `
+	Name          string `json:"name,omitempty" gorm:"column:name;type:varchar;not null" `
+	Password      string `json:"password,omitempty" gorm:"omitempty"`
+	FollowCount   int64  `json:"follow_count,omitempty" gorm:"omitempty"`
+	FollowerCount int64  `json:"follower_count,omitempty" gorm:"omitempty"`
+	IsFollow      bool   `json:"is_follow,omitempty" gorm:"omitempty"`
 }

@@ -24,7 +24,8 @@ type Manager interface {
 	// AddComment 添加评论
 	AddComment(comment model.Comment) error
 	// GetUserInfo 获取用户信息
-	GetUserInfo(userId int64, userinfo *model.Userinfo) error
+	//GetUserInfo(userId int64, userInfo *model.Userinfo) error
+	GetUserInfo(userId int64) (model.Userinfo, error)
 }
 
 var Mgr Manager
