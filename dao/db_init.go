@@ -23,8 +23,7 @@ type Manager interface {
 	CommentAction() error
 	// AddComment 添加评论
 	AddComment(comment model.Comment) error
-	// GetUserInfo 获取用户信息
-	//GetUserInfo(userId int64, userInfo *model.Userinfo) error
+	// GetUserInfo 获取用户信息(只返回响应需要的信息)
 	GetUserInfo(userId int64) (model.Userinfo, error)
 }
 

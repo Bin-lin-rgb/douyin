@@ -23,12 +23,6 @@ func (mgr manager) IsExist(username string) (model.Userinfo, error) {
 
 }
 
-//func (mgr manager) GetUserInfo(userId int64, userinfo *model.Userinfo) error {
-//	//result := mgr.db.Model(&userinfo).Find(&UserInfoResponse{}, userId)
-//	result := mgr.db.Select("id", "name", "follow_count", "follower_count", "is_follow").Find(userinfo, userId)
-//	return result.Error
-//}
-
 func (mgr manager) GetUserInfo(userId int64) (model.Userinfo, error) {
 	var userinfo model.Userinfo
 	//result := mgr.db.Model(&userinfo).Find(&UserInfoResponse{}, userId)
