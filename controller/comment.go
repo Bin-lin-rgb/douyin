@@ -21,13 +21,12 @@ type CommentActionResponse struct {
 	Comment model.Comment `json:"comment,omitempty"`
 }
 
-// CommentAction no practical effect, just check if token is valid
+// CommentAction 评论操作
 func CommentAction(c *gin.Context) {
 	token := c.Query("token")
 	actionType := c.Query("action_type")
 
 	if user, exist := TokenIsValid(token); exist {
-		fmt.Println(user)
 		//发布评论
 		if actionType == "1" {
 			text := c.Query("comment_text")
@@ -79,10 +78,31 @@ func CommentAction(c *gin.Context) {
 
 }
 
-// CommentList all videos have same demo comment list
+// CommentList 获取评论列表
 func CommentList(c *gin.Context) {
-	c.JSON(http.StatusOK, CommentListResponse{
-		Response:    model.Response{StatusCode: 0},
-		CommentList: DemoComments,
-	})
+	token := c.Query("token")
+	videoId := c.Query("video_id")
+
+	vid, err := strconv.ParseInt(videoId, 10, 64)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	if _, exist := TokenIsValid(token); exist {
+
+		commentList, err := dao.Mgr.GetCommentList(vid)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, CommentListResponse{
+			Response:    model.Response{StatusCode: 0},
+			CommentList: commentList,
+		})
+	} else {
+		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+	}
+
 }

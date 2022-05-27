@@ -9,7 +9,8 @@ type Response struct {
 
 type Video struct {
 	Id            int64    `json:"id,omitempty"`
-	Author        Userinfo `json:"author"`
+	AuthorId      int64    `json:",omitempty" gorm:"column:author_id;"`
+	Author        Userinfo `json:"author" gorm:"foreignKey:AuthorId;"`
 	PlayUrl       string   `json:"play_url,omitempty"`
 	CoverUrl      string   `json:"cover_url,omitempty"`
 	FavoriteCount int64    `json:"favorite_count,omitempty"`
@@ -24,8 +25,8 @@ type Comment struct {
 	VideoId     int64    `json:",omitempty" gorm:"column:video_id;"`
 	Content     string   `json:"content,omitempty" gorm:"column:content;"`
 	CreateDate  string   `json:"create_date,omitempty" gorm:"-" `
-	Commenter   Userinfo `json:"user,omitempty" gorm:"foreignKey:CommenterId;references:id;-;"`
-	Video       Video    `json:"video,omitempty" gorm:"foreignKey:VideoId;references:id;-;"`
+	Commenter   Userinfo `json:"user,omitempty" gorm:"foreignKey:CommenterId;"`
+	Video       Video    `json:"video,omitempty" gorm:"foreignKey:VideoId;-;"`
 }
 
 type Userinfo struct {

@@ -25,6 +25,8 @@ type Manager interface {
 	AddComment(comment model.Comment) error
 	// GetUserInfo 获取用户信息(只返回响应需要的信息)
 	GetUserInfo(userId int64) (model.Userinfo, error)
+	// GetCommentList 获取评论列表
+	GetCommentList(videoId int64) ([]model.Comment, error)
 }
 
 var Mgr Manager
@@ -41,6 +43,5 @@ func init() {
 		log.Fatal("Failed to init db:", err)
 	}
 	Mgr = &manager{db: db}
-	//db.AutoMigrate(&model.User{})
 
 }
