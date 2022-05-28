@@ -3,12 +3,10 @@ package controller
 import (
 	"douyin/dao"
 	"douyin/model"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 type CommentListResponse struct {
@@ -28,50 +26,39 @@ func CommentAction(c *gin.Context) {
 
 	if user, exist := TokenIsValid(token); exist {
 		//发布评论
-		if actionType == "1" {
-			text := c.Query("comment_text")
-			videoId := c.Query("video_id")
 
-			uid := user.Id
+		text := c.Query("comment_text")
+		videoId := c.Query("video_id")
 
-			fmt.Println("userId", uid)
-			fmt.Println("videoId", videoId)
+		uid := user.Id
 
-			vid, err := strconv.ParseInt(videoId, 10, 64)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-
-			//插入视频实现后删除，仅测试用
-			vid = 2
-
-			comment := model.Comment{
-				Content:     text,
-				CommenterId: uid,
-				VideoId:     vid,
-			}
-			err = dao.Mgr.AddComment(comment)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-
-			userinfo, err := dao.Mgr.GetUserInfo(uid)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			fmt.Printf("%v\n", userinfo)
-
-			c.JSON(http.StatusOK, CommentActionResponse{Response: model.Response{StatusCode: 0},
-				Comment: model.Comment{
-					Commenter:  userinfo,
-					Content:    text,
-					CreateDate: time.Now().Format("01-02"),
-				}})
+		vid, err := strconv.ParseInt(videoId, 10, 64)
+		if err != nil {
+			log.Println(err)
+			return
 		}
-		//c.JSON(http.StatusOK, model.Response{StatusCode: 0})
+
+		//插入视频实现后删除，仅测试用
+		vid = 2
+
+		comment := model.Comment{
+			Content:     text,
+			CommenterId: uid,
+			VideoId:     vid,
+		}
+		err = dao.Mgr.CommentAction(comment, actionType)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, CommentActionResponse{Response: model.Response{StatusCode: 0},
+			Comment: model.Comment{
+				Commenter:  user,
+				Content:    text,
+				CreateDate: user.CreatedAt.Format("01-02"),
+			}})
+
 	} else {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 	}
@@ -94,6 +81,9 @@ func CommentList(c *gin.Context) {
 		commentList, err := dao.Mgr.GetCommentList(vid)
 		if err != nil {
 			log.Println(err)
+			c.JSON(http.StatusOK, CommentListResponse{
+				Response: model.Response{StatusCode: 500, StatusMsg: "获取评论列表失败，请重试"},
+			})
 			return
 		}
 

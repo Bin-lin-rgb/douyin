@@ -19,14 +19,17 @@ type Manager interface {
 	// IsExist 判断是否用户是否已存在
 	IsExist(username string) (model.Userinfo, error)
 
-	// CommentAction 评论操作
-	CommentAction() error
-	// AddComment 添加评论
-	AddComment(comment model.Comment) error
+	// CommentAction 添加评论
+	CommentAction(comment model.Comment, actionType string) error
 	// GetUserInfo 获取用户信息(只返回响应需要的信息)
 	GetUserInfo(userId int64) (model.Userinfo, error)
 	// GetCommentList 获取评论列表
 	GetCommentList(videoId int64) ([]model.Comment, error)
+
+	// FavoriteAction 点赞操作
+	FavoriteAction(userId int64, videoId int64, actionType string) error
+	// FavoriteList 获取用户点赞列表
+	FavoriteList(userId int64) ([]model.Video, error)
 }
 
 var Mgr Manager

@@ -25,7 +25,7 @@ type Comment struct {
 	VideoId     int64    `json:",omitempty" gorm:"column:video_id;"`
 	Content     string   `json:"content,omitempty" gorm:"column:content;"`
 	CreateDate  string   `json:"create_date,omitempty" gorm:"-" `
-	Commenter   Userinfo `json:"user,omitempty" gorm:"foreignKey:CommenterId;"`
+	Commenter   Userinfo `json:"user,omitempty" gorm:"foreignKey:CommenterId;-;"`
 	Video       Video    `json:"video,omitempty" gorm:"foreignKey:VideoId;-;"`
 }
 
@@ -37,4 +37,11 @@ type Userinfo struct {
 	FollowCount   int64  `json:"follow_count,omitempty" gorm:"omitempty"`
 	FollowerCount int64  `json:"follower_count,omitempty" gorm:"omitempty"`
 	IsFollow      bool   `json:"is_follow,omitempty" gorm:"omitempty"`
+}
+
+type Favorite struct {
+	UserId  int64    `json:"user_id,omitempty" gorm:"column:user_id"`
+	VideoId int64    `json:"video_id,omitempty" gorm:"column:video_id"`
+	User    Userinfo `json:"user,omitempty" gorm:"foreignKey:UserId;-;"`
+	Video   Video    `json:"video,omitempty" gorm:"foreignKey:VideoId;-;"`
 }

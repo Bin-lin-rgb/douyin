@@ -3,25 +3,23 @@ package dao
 //数据库相关，gorm相关接口
 import (
 	"douyin/model"
-	"log"
-	"time"
+	"errors"
+	"gorm.io/gorm"
 )
 
-type CommentResponse struct {
-	Id          int64  `json:"id,omitempty" gorm:"column:id;" `
-	CommenterId int64  `json:",omitempty" gorm:"column:user_id;"`
-	VideoId     int64  `json:",omitempty" gorm:"column:video_id;"`
-	Content     string `json:"content,omitempty" gorm:"column:content;"`
-	CreatedAt   time.Time
-}
+func (mgr manager) CommentAction(comment model.Comment, actionType string) error {
 
-func (mgr manager) CommentAction() error {
-	return nil
-}
+	var result *gorm.DB
 
-func (mgr manager) AddComment(comment model.Comment) error {
+	switch actionType {
+	case "1":
+		result = mgr.db.Create(&comment)
+	case "2":
+		//没有这个功能
+	default:
+		return errors.New("未知操作类型")
+	}
 
-	result := mgr.db.Create(&comment)
 	return result.Error
 }
 
@@ -31,10 +29,5 @@ func (mgr manager) GetCommentList(videoId int64) ([]model.Comment, error) {
 
 	result := mgr.db.Where("video_id = ?", videoId).Preload("Commenter").Find(&commentList)
 
-	if result.Error != nil {
-		log.Println(result.Error)
-		return nil, result.Error
-	}
-
-	return commentList, nil
+	return commentList, result.Error
 }
