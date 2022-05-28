@@ -10,9 +10,6 @@ func (mgr manager) IsExist(username string) (model.Userinfo, error) {
 	var userinfo model.Userinfo
 	result := mgr.db.Where("name=?", username).Find(&userinfo)
 
-	//不返回密码
-	userinfo.Password = ""
-
 	return userinfo, result.Error
 
 }

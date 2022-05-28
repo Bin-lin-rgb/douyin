@@ -52,6 +52,9 @@ func CommentAction(c *gin.Context) {
 			return
 		}
 
+		//不返回密码
+		user.Password = ""
+
 		c.JSON(http.StatusOK, CommentActionResponse{Response: model.Response{StatusCode: 0},
 			Comment: model.Comment{
 				Commenter:  user,
@@ -77,6 +80,9 @@ func CommentList(c *gin.Context) {
 	}
 
 	if _, exist := TokenIsValid(token); exist {
+
+		//插入视频实现后删除，仅测试用
+		vid = 2
 
 		commentList, err := dao.Mgr.GetCommentList(vid)
 		if err != nil {

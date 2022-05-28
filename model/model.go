@@ -25,8 +25,8 @@ type Comment struct {
 	VideoId     int64    `json:",omitempty" gorm:"column:video_id;"`
 	Content     string   `json:"content,omitempty" gorm:"column:content;"`
 	CreateDate  string   `json:"create_date,omitempty" gorm:"-" `
-	Commenter   Userinfo `json:"user,omitempty" gorm:"foreignKey:CommenterId;-;"`
-	Video       Video    `json:"video,omitempty" gorm:"foreignKey:VideoId;-;"`
+	Commenter   Userinfo `json:"user,omitempty" gorm:"foreignKey:CommenterId;"`
+	Video       Video    `json:"video,omitempty" gorm:"foreignKey:VideoId;"`
 }
 
 type Userinfo struct {
