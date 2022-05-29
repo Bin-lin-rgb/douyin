@@ -137,6 +137,8 @@ func UserInfo(c *gin.Context) {
 		return
 	}
 
+	//user.IsFollow = true
+
 	c.JSON(http.StatusOK, UserResponse{
 		Response: model.Response{StatusCode: 0},
 		User:     user,
