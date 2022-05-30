@@ -4,23 +4,52 @@ package dao
 import (
 	"douyin/model"
 	"errors"
-	"gorm.io/gorm"
+	"log"
 )
 
 func (mgr manager) CommentAction(comment model.Comment, actionType string) error {
+	
+	tx := mgr.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
-	var result *gorm.DB
+	if err := tx.Error; err != nil {
+		return err
+	}
 
 	switch actionType {
 	case "1":
-		result = mgr.db.Create(&comment)
+		if err := tx.Create(&comment).Error; err != nil {
+			log.Println(err)
+			tx.Rollback()
+			return err
+		}
 	case "2":
 		//没有这个功能
 	default:
 		return errors.New("未知操作类型")
 	}
 
-	return result.Error
+	var commentCount int64
+
+	if err := tx.Model(&model.Comment{}).Where("video_id = ?", comment.VideoId).Count(
+		&commentCount).Error; err != nil {
+		log.Println(err)
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(&model.Video{}).Select("comment_count").Where("id = ?", comment.VideoId).Updates(
+		model.Video{CommentCount: commentCount}).Error; err != nil {
+		log.Println(err)
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }
 
 func (mgr manager) GetCommentList(videoId int64) ([]model.Comment, error) {

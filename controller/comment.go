@@ -95,7 +95,7 @@ func CommentList(c *gin.Context) {
 			})
 			return
 		}
-
+		
 		c.JSON(http.StatusOK, CommentListResponse{
 			Response:    model.Response{StatusCode: 0},
 			CommentList: commentList,

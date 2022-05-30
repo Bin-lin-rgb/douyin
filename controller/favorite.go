@@ -23,10 +23,7 @@ func FavoriteAction(c *gin.Context) {
 		}
 
 		uid := user.Id
-
-		//插入视频实现后删除，仅测试用
-		//vid = 2
-
+		
 		err = dao.Mgr.FavoriteAction(uid, vid, actionType)
 		if err != nil {
 			log.Println(err)

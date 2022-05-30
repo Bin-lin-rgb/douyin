@@ -4,7 +4,7 @@ import (
 	"douyin/model"
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
+	"log"
 )
 
 func (mgr manager) FavoriteAction(userId int64, videoId int64, actionType string) error {
@@ -12,18 +12,52 @@ func (mgr manager) FavoriteAction(userId int64, videoId int64, actionType string
 		UserId:  userId,
 		VideoId: videoId,
 	}
-	var result *gorm.DB
+
+	tx := mgr.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
 
 	switch actionType {
 	case "1":
-		result = mgr.db.Create(&favorite)
+		if err := tx.Create(&favorite).Error; err != nil {
+			log.Println(err)
+			tx.Rollback()
+			return err
+		}
 	case "2":
-		result = mgr.db.Where("user_id = ? AND video_id= ?", userId, videoId).Delete(&favorite)
+		if err := tx.Where("user_id = ? AND video_id= ?", userId, videoId).Delete(&favorite).Error; err != nil {
+			log.Println(err)
+			tx.Rollback()
+			return err
+		}
 	default:
 		return errors.New("未知操作类型")
 	}
 
-	return result.Error
+	var favoriteCount int64
+
+	if err := tx.Model(&model.Favorite{}).Where("video_id = ?", videoId).Count(
+		&favoriteCount).Error; err != nil {
+		log.Println(err)
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(&model.Video{}).Select("favorite_count").Where("id = ?", videoId).Updates(
+		model.Video{FavoriteCount: favoriteCount}).Error; err != nil {
+		log.Println(err)
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 
 }
 
@@ -43,9 +77,9 @@ func (mgr manager) FavoriteList(userId int64) ([]model.Video, error) {
 		return nil, err
 	}
 
-	if result := tx.Where("user_id = ?", userId).Find(&favoritedVideo); result.Error != nil {
+	if err := tx.Where("user_id = ?", userId).Find(&favoritedVideo).Error; err != nil {
 		tx.Rollback()
-		return nil, result.Error
+		return nil, err
 	}
 
 	var videoId []int64
@@ -55,9 +89,9 @@ func (mgr manager) FavoriteList(userId int64) ([]model.Video, error) {
 
 	fmt.Printf("%v\n", videoId)
 
-	if result := tx.Preload("Author").Find(&favoriteList, videoId); result.Error != nil {
+	if err := tx.Preload("Author").Find(&favoriteList, videoId).Error; err != nil {
 		tx.Rollback()
-		return nil, result.Error
+		return nil, err
 	}
 
 	return favoriteList, tx.Commit().Error

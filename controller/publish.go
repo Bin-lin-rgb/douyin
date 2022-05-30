@@ -52,7 +52,6 @@ func Publish(c *gin.Context) {
 		StatusMsg:  finalName + " uploaded successfully",
 	})
 
-	// ====
 	root := "http://10.0.2.2:8080/static/"
 	playurl := StrBulider(root, finalName)
 	fmt.Println("-------------------", playurl)

@@ -8,7 +8,7 @@ import (
 
 func (mgr manager) IsExist(username string) (model.Userinfo, error) {
 	var userinfo model.Userinfo
-	result := mgr.db.Where("name=?", username).Find(&userinfo)
+	result := mgr.db.Model(&model.Userinfo{}).Where("name=?", username).Find(&userinfo)
 
 	return userinfo, result.Error
 

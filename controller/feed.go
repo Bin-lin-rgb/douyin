@@ -19,7 +19,7 @@ type FeedResponse struct {
 
 func Feed(c *gin.Context) {
 	token := c.Query("token")
-	user, _ := TokenIsValid(token)
+	user, exist := TokenIsValid(token)
 
 	// 可选参数，限制返回视频的最新投稿时间戳，精确到秒，不填表示当前时间
 	latestTimeString := c.Query("latest_time")
@@ -41,9 +41,9 @@ func Feed(c *gin.Context) {
 		return
 	}
 
-	// 如果未登录
-	if user != (model.Userinfo{}) {
-		for i := 0; i < videoLen-1; i++ {
+	// 如果已登录
+	if exist {
+		for i := 0; i < videoLen; i++ {
 			b := dao.Mgr.UserToVideo(user, videos[i])
 			if !b {
 				videos[i].IsFavorite = false
