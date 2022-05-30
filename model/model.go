@@ -1,6 +1,8 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Response struct {
 	StatusCode int32  `json:"status_code"`
@@ -8,9 +10,11 @@ type Response struct {
 }
 
 type Video struct {
+	gorm.Model
 	Id            int64    `json:"id,omitempty"`
 	AuthorId      int64    `json:",omitempty" gorm:"column:author_id;"`
 	Author        Userinfo `json:"author" gorm:"foreignKey:AuthorId;"`
+	Title         string   `json:"title"`
 	PlayUrl       string   `json:"play_url,omitempty"`
 	CoverUrl      string   `json:"cover_url,omitempty"`
 	FavoriteCount int64    `json:"favorite_count,omitempty"`
@@ -24,7 +28,7 @@ type Comment struct {
 	CommenterId int64    `json:",omitempty" gorm:"column:user_id;"`
 	VideoId     int64    `json:",omitempty" gorm:"column:video_id;"`
 	Content     string   `json:"content,omitempty" gorm:"column:content;"`
-	CreateDate  string   `json:"create_date,omitempty" gorm:"-" `
+	CreateDate  string   `json:"create_date,omitempty" gorm:"column:create_date" `
 	Commenter   Userinfo `json:"user,omitempty" gorm:"foreignKey:CommenterId;"`
 	Video       Video    `json:"video,omitempty" gorm:"foreignKey:VideoId;"`
 }

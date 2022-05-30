@@ -30,6 +30,17 @@ type Manager interface {
 	FavoriteAction(userId int64, videoId int64, actionType string) error
 	// FavoriteList 获取用户点赞列表
 	FavoriteList(userId int64) ([]model.Video, error)
+
+	// InsertToVideo 用户投稿后将用户信息、视频地址等信息插入t_video表
+	InsertToVideo(video model.Video) error
+	// GetVideoByUserId  通过userID返回 video
+	GetVideoByUserId(userId string) ([]model.Video, error)
+
+	// GetAllVideo  在feed使用，返回videos
+	GetAllVideo(latestTime int64) ([]model.Video, error)
+
+	// UserToVideo 一个人访问另一个人的视频，查询是否点赞
+	UserToVideo(userinfo model.Userinfo, video model.Video) bool
 }
 
 var Mgr Manager

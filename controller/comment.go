@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type CommentListResponse struct {
@@ -38,13 +39,14 @@ func CommentAction(c *gin.Context) {
 			return
 		}
 
-		//插入视频实现后删除，仅测试用
-		vid = 2
+		////插入视频实现后删除，仅测试用
+		//vid = 2
 
 		comment := model.Comment{
 			Content:     text,
 			CommenterId: uid,
 			VideoId:     vid,
+			CreateDate:  time.Now().Format("01-02"),
 		}
 		err = dao.Mgr.CommentAction(comment, actionType)
 		if err != nil {
@@ -57,9 +59,10 @@ func CommentAction(c *gin.Context) {
 
 		c.JSON(http.StatusOK, CommentActionResponse{Response: model.Response{StatusCode: 0},
 			Comment: model.Comment{
-				Commenter:  user,
-				Content:    text,
-				CreateDate: user.CreatedAt.Format("01-02"),
+				Commenter: user,
+				Content:   text,
+				//CreateDate: user.CreatedAt.Format("01-02"),
+				CreateDate: comment.CreateDate,
 			}})
 
 	} else {
@@ -82,7 +85,7 @@ func CommentList(c *gin.Context) {
 	if _, exist := TokenIsValid(token); exist {
 
 		//插入视频实现后删除，仅测试用
-		vid = 2
+		//vid = 2
 
 		commentList, err := dao.Mgr.GetCommentList(vid)
 		if err != nil {

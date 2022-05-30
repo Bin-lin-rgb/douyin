@@ -16,10 +16,10 @@ var DemoVideos = []model.Video{
 
 var DemoComments = []model.Comment{
 	{
-		Id:         1,
-		Commenter:  DemoUser,
-		Content:    "Test Comment",
-		CreateDate: "05-01",
+		Id:        1,
+		Commenter: DemoUser,
+		Content:   "Test Comment",
+		//CreateDate: "05-01",
 	},
 }
 
