@@ -47,9 +47,17 @@ func Feed(c *gin.Context) {
 			b := dao.Mgr.UserToVideo(user, videos[i])
 			if !b {
 				videos[i].IsFavorite = false
-				continue
+
+			}else{
+				videos[i].IsFavorite = true
 			}
-			videos[i].IsFavorite = true
+
+			b,_ = dao.Mgr.IsFollow(user.Id,videos[i].Author.Id)
+			if b{
+				videos[i].Author.IsFollow = true
+			}else{
+				videos[i].Author.IsFollow = false
+			}
 		}
 	}
 

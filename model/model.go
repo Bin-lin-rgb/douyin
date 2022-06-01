@@ -19,7 +19,7 @@ type Video struct {
 	CoverUrl      string   `json:"cover_url,omitempty"`
 	FavoriteCount int64    `json:"favorite_count,omitempty"`
 	CommentCount  int64    `json:"comment_count,omitempty"`
-	IsFavorite    bool     `json:"is_favorite,omitempty"`
+	IsFavorite    bool     `json:"is_favorite,omitempty" gorm:"-"`
 }
 
 type Comment struct {
@@ -40,7 +40,7 @@ type Userinfo struct {
 	Password      string `json:"password,omitempty" gorm:"omitempty"`
 	FollowCount   int64  `json:"follow_count,omitempty" gorm:"omitempty"`
 	FollowerCount int64  `json:"follower_count,omitempty" gorm:"omitempty"`
-	IsFollow      bool   `json:"is_follow,omitempty" gorm:"omitempty"`
+	IsFollow      bool   `json:"is_follow,omitempty" gorm:"-"`
 }
 
 type Favorite struct {
@@ -49,3 +49,11 @@ type Favorite struct {
 	User    Userinfo `json:"user,omitempty" gorm:"foreignKey:UserId;-;"`
 	Video   Video    `json:"video,omitempty" gorm:"foreignKey:VideoId;-;"`
 }
+
+type Follow struct {
+	UserId  int64    `json:"user_id,omitempty" gorm:"column:user_id"`
+	FollowId int64    `json:"follow_id,omitempty" gorm:"column:follow_id"`
+	User    Userinfo `json:"user,omitempty" gorm:"foreignKey:UserId"`
+	Follow  Userinfo    `json:"follow,omitempty" gorm:"foreignKey:FollowId"`
+}
+

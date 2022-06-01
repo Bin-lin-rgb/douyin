@@ -41,6 +41,15 @@ type Manager interface {
 
 	// UserToVideo 一个人访问另一个人的视频，查询是否点赞
 	UserToVideo(userinfo model.Userinfo, video model.Video) bool
+
+	// RelationAction 关注操作
+	RelationAction(userID,toUserID int64,actionType string)error
+	// GetFollowList 获取关注列表
+	GetFollowList(userID int64) ([]model.Userinfo,error)
+	// GetFollowerList 获取粉丝列表
+	GetFollowerList(userID int64)([]model.Userinfo,error)
+
+	IsFollow(userId,toUserId int64) (bool,error)
 }
 
 var Mgr Manager

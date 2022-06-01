@@ -1,9 +1,12 @@
 package controller
 
 import (
+	"douyin/dao"
 	"douyin/model"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"strconv"
 )
 
 type UserListResponse struct {
@@ -14,8 +17,18 @@ type UserListResponse struct {
 // RelationAction no practical effect, just check if token is valid
 func RelationAction(c *gin.Context) {
 	token := c.Query("token")
+	toUserID := c.Query("to_user_id")
+	toUser, _ := strconv.ParseInt(toUserID,10,64)
+	actionType := c.Query("action_type")
+	if user, exist := TokenIsValid(token); exist {
 
-	if _, exist := usersLoginInfo[token]; exist {
+		err := dao.Mgr.RelationAction(user.Id, toUser, actionType)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "关注操作失败，请重试"})
+			return
+		}
+
 		c.JSON(http.StatusOK, model.Response{StatusCode: 0})
 	} else {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
@@ -24,20 +37,53 @@ func RelationAction(c *gin.Context) {
 
 // FollowList all users have same follow list
 func FollowList(c *gin.Context) {
-	c.JSON(http.StatusOK, UserListResponse{
-		Response: model.Response{
-			StatusCode: 0,
-		},
-		UserList: []model.Userinfo{DemoUser},
-	})
+	token := c.Query("token")
+
+	if user, exist := TokenIsValid(token); exist {
+		uid := user.Id
+		followList, err := dao.Mgr.GetFollowList(uid)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "获取关注列表失败，请重试"})
+			return
+		}
+
+		c.JSON(http.StatusOK, UserListResponse{
+			Response: model.Response{
+				StatusCode: 0,
+			},
+			UserList: followList,
+		})
+
+
+	} else {
+		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+	}
+
 }
 
 // FollowerList all users have same follower list
 func FollowerList(c *gin.Context) {
-	c.JSON(http.StatusOK, UserListResponse{
-		Response: model.Response{
-			StatusCode: 0,
-		},
-		UserList: []model.Userinfo{DemoUser},
-	})
+	token := c.Query("token")
+
+	if user, exist := TokenIsValid(token); exist {
+		uid := user.Id
+		followList, err := dao.Mgr.GetFollowerList(uid)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "获取粉丝列表失败，请重试"})
+			return
+		}
+
+		c.JSON(http.StatusOK, UserListResponse{
+			Response: model.Response{
+				StatusCode: 0,
+			},
+			UserList: followList,
+		})
+
+
+	} else {
+		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+	}
 }

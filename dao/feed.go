@@ -13,12 +13,12 @@ func (mgr manager) GetAllVideo(latestTime int64) ([]model.Video, error) {
 	mgr.db.Model(&model.Video{}).Count(&count)
 	fmt.Println("---Count---", count)
 	if count <= 30 {
-		result := mgr.db.Model(&model.Video{}).Order("created_at DESC").Find(&videos)
+		result := mgr.db.Model(&model.Video{}).Order("created_at DESC").Preload("Author").Find(&videos)
 		return videos, result.Error
 	}
 	// "created_at <= ?" : 按道理是 <= , 但是查不全，不知道为啥那边请求的latestTime有时返回的是最早的时间
 	// "created_at >= ?" : 当latestTime表示的是当前时间，“>=” 就会查询为空
-	result := mgr.db.Where("created_at >= ?", time.Unix(latestTime, 0).Format(timeLayout)).Order("created_at DESC").Limit(30).Find(&videos)
+	result := mgr.db.Where("created_at >= ?", time.Unix(latestTime, 0).Format(timeLayout)).Order("created_at DESC").Preload("Author").Limit(30).Find(&videos)
 	return videos, result.Error
 }
 
