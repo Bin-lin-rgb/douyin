@@ -1,12 +1,16 @@
 package controller
 
 import (
+	"bytes"
 	"douyin/dao"
 	"douyin/model"
 	"fmt"
+	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
+	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -53,13 +57,24 @@ func Publish(c *gin.Context) {
 	})
 
 	root := "http://10.0.2.2:8080/static/"
-	playurl := StrBulider(root, finalName)
-	fmt.Println("-------------------", playurl)
+	playUrl := StrBulider(root, finalName)
+	fmt.Println("-------------------", playUrl)
+
+	filePath := StrBulider("./public/", finalName)
+
+	// 此处返回值为./public/image.png 若想直接存数据库就启用
+	_, err = GetSnapshot(filePath, finalName)
+	if err != nil {
+		log.Fatal("--GetSnapshot--:", err)
+	}
+	finalImageName := StrBulider(finalName, ".png")
+	coverUrl := StrBulider(root, finalImageName)
+
 	video := model.Video{
 		AuthorId:      user.Id,
 		Title:         title,
-		PlayUrl:       playurl,
-		CoverUrl:      "https://img0.baidu.com/it/u=3346653715,2652099287&fm=253&fmt=auto&app=138&f=JPEG?w=775&h=500",
+		PlayUrl:       playUrl,
+		CoverUrl:      coverUrl,
 		FavoriteCount: 0,
 		CommentCount:  0,
 	}
@@ -69,7 +84,6 @@ func Publish(c *gin.Context) {
 	}
 }
 
-// PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
 	token := c.Query("token")
 	userId := c.Query("user_id")
@@ -88,6 +102,8 @@ func PublishList(c *gin.Context) {
 		return
 	}
 
+	fmt.Printf("%#v", videos)
+
 	c.JSON(http.StatusOK, VideoListResponse{
 		Response: model.Response{
 			StatusCode: 0,
@@ -101,4 +117,35 @@ func StrBulider(first string, finalName string) string {
 	builder.WriteString(first)
 	builder.WriteString(finalName)
 	return builder.String()
+}
+
+func GetSnapshot(videoPath, snapshotPath string) (snapshotName string, err error) {
+	snapshotPath = StrBulider("./public/", snapshotPath)
+	frameNum := 1
+	buf := bytes.NewBuffer(nil)
+	err = ffmpeg.Input(videoPath).
+		Filter("select", ffmpeg.Args{fmt.Sprintf("gte(n,%d)", frameNum)}).
+		Output("pipe:", ffmpeg.KwArgs{"vframes": 1, "format": "image2", "vcodec": "mjpeg"}).
+		WithOutput(buf, os.Stdout).
+		Run()
+	if err != nil {
+		log.Fatal("生成缩略图失败：", err)
+		return "", err
+	}
+
+	img, err := imaging.Decode(buf)
+	if err != nil {
+		log.Fatal("生成缩略图失败：", err)
+		return "", err
+	}
+
+	err = imaging.Save(img, snapshotPath+".png")
+	if err != nil {
+		log.Fatal("生成缩略图失败：", err)
+		return "", err
+	}
+
+	names := strings.Split(snapshotPath, "\\")
+	snapshotName = names[len(names)-1] + ".png"
+	return snapshotName, nil
 }
