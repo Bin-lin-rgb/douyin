@@ -7,6 +7,7 @@ import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -66,4 +67,11 @@ func TokenIsValid(token string) (model.Userinfo, bool) {
 	}
 
 	return user, true
+}
+
+func StrBulider(first string, finalName string) string {
+	var builder strings.Builder
+	builder.WriteString(first)
+	builder.WriteString(finalName)
+	return builder.String()
 }

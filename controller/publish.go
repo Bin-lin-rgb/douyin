@@ -55,9 +55,9 @@ func Publish(c *gin.Context) {
 		StatusMsg:  finalName + " uploaded successfully",
 	})
 
-	root := "http://10.0.2.2:8080/static/"
-	playUrl := StrBulider(root, finalName)
-	fmt.Println("-------------------", playUrl)
+	//root := "http://10.0.2.2:8080/static/"
+	//playUrl := StrBulider(constrant.Root, finalName)
+	//fmt.Println("-------------------", playUrl)
 
 	filePath := StrBulider("./public/", finalName)
 
@@ -67,13 +67,13 @@ func Publish(c *gin.Context) {
 		log.Fatal("--GetSnapshot--:", err)
 	}
 	finalImageName := StrBulider(finalName, ".png")
-	coverUrl := StrBulider(root, finalImageName)
+	//coverUrl := StrBulider(root, finalImageName)
 
 	video := model.Video{
 		AuthorId:      user.Id,
 		Title:         title,
-		PlayUrl:       playUrl,
-		CoverUrl:      coverUrl,
+		PlayUrl:       finalName,
+		CoverUrl:      finalImageName,
 		FavoriteCount: 0,
 		CommentCount:  0,
 	}
@@ -107,13 +107,6 @@ func PublishList(c *gin.Context) {
 		},
 		VideoList: videos,
 	})
-}
-
-func StrBulider(first string, finalName string) string {
-	var builder strings.Builder
-	builder.WriteString(first)
-	builder.WriteString(finalName)
-	return builder.String()
 }
 
 func GetSnapshot(videoPath, snapshotPath string) (snapshotName string, err error) {

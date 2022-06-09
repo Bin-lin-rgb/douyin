@@ -2,6 +2,7 @@ package dao
 
 import (
 	"douyin/model"
+	"douyin/pkg/constrant"
 	"fmt"
 	"time"
 )
@@ -17,10 +18,21 @@ func (mgr manager) GetAllVideo(latestTime int64) ([]model.Video, error) {
 	result := mgr.db.Model(&model.Video{}).Where("created_at <= ?", time.Unix(latestTime, 0).Format(timeLayout)).
 		Order("created_at DESC").Preload("Author").Limit(30).Count(&count).Find(&videos)
 
+	videoLen := len(videos)
+	for i := 0; i < videoLen; i++ {
+		videos[i].PlayUrl = StrBuilder(constrant.Root, videos[i].PlayUrl)
+		videos[i].CoverUrl = StrBuilder(constrant.Root, videos[i].CoverUrl)
+	}
+
 	if count == 1 {
-		//	证明已经刷完了，是小于等于最早时间只能查到1个视频记录
-		result := mgr.db.Model(&model.Video{}).Where("created_at >= ?", time.Unix(latestTime, 0).Format(timeLayout)).
-			Order("created_at DESC").Preload("Author").Limit(30).Count(&count).Find(&videos)
+		//	是小于等于最早时间只能查到1个视频记录, 证明已经刷完了
+		result := mgr.db.Model(&model.Video{}).Order("created_at DESC").
+			Preload("Author").Limit(30).Count(&count).Find(&videos)
+		videoLen = len(videos)
+		for i := 0; i < videoLen; i++ {
+			videos[i].PlayUrl = StrBuilder(constrant.Root, videos[i].PlayUrl)
+			videos[i].CoverUrl = StrBuilder(constrant.Root, videos[i].CoverUrl)
+		}
 		return videos, result.Error
 	}
 	return videos, result.Error
