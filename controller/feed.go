@@ -44,18 +44,17 @@ func Feed(c *gin.Context) {
 	// 如果已登录
 	if exist {
 		for i := 0; i < videoLen; i++ {
-			b := dao.Mgr.UserToVideo(user, videos[i])
-			if !b {
-				videos[i].IsFavorite = false
-
-			}else{
+			b, _ := dao.Mgr.IsFavorite(user.Id, videos[i].Id)
+			if b {
 				videos[i].IsFavorite = true
+			} else {
+				videos[i].IsFavorite = false
 			}
 
-			b,_ = dao.Mgr.IsFollow(user.Id,videos[i].Author.Id)
-			if b{
+			b, _ = dao.Mgr.IsFollow(user.Id, videos[i].Author.Id)
+			if b {
 				videos[i].Author.IsFollow = true
-			}else{
+			} else {
 				videos[i].Author.IsFollow = false
 			}
 		}

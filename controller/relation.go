@@ -14,11 +14,10 @@ type UserListResponse struct {
 	UserList []model.Userinfo `json:"user_list"`
 }
 
-// RelationAction no practical effect, just check if token is valid
 func RelationAction(c *gin.Context) {
 	token := c.Query("token")
 	toUserID := c.Query("to_user_id")
-	toUser, _ := strconv.ParseInt(toUserID,10,64)
+	toUser, _ := strconv.ParseInt(toUserID, 10, 64)
 	actionType := c.Query("action_type")
 	if user, exist := TokenIsValid(token); exist {
 
@@ -35,7 +34,6 @@ func RelationAction(c *gin.Context) {
 	}
 }
 
-// FollowList all users have same follow list
 func FollowList(c *gin.Context) {
 	token := c.Query("token")
 
@@ -55,14 +53,12 @@ func FollowList(c *gin.Context) {
 			UserList: followList,
 		})
 
-
 	} else {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 	}
 
 }
 
-// FollowerList all users have same follower list
 func FollowerList(c *gin.Context) {
 	token := c.Query("token")
 
@@ -81,7 +77,6 @@ func FollowerList(c *gin.Context) {
 			},
 			UserList: followList,
 		})
-
 
 	} else {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})

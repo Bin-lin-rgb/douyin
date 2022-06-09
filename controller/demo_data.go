@@ -14,15 +14,6 @@ var DemoVideos = []model.Video{
 	},
 }
 
-var DemoComments = []model.Comment{
-	{
-		Id:        1,
-		Commenter: DemoUser,
-		Content:   "Test Comment",
-		//CreateDate: "05-01",
-	},
-}
-
 var DemoUser = model.Userinfo{
 	Id:            1,
 	Name:          "TestUser",

@@ -39,17 +39,17 @@ type Manager interface {
 	// GetAllVideo  在feed使用，返回videos
 	GetAllVideo(latestTime int64) ([]model.Video, error)
 
-	// UserToVideo 一个人访问另一个人的视频，查询是否点赞
-	UserToVideo(userinfo model.Userinfo, video model.Video) bool
+	// IsFavorite 一个人访问另一个人的视频，查询是否点赞
+	IsFavorite(userID int64, videoId int64) (bool, error)
 
 	// RelationAction 关注操作
-	RelationAction(userID,toUserID int64,actionType string)error
+	RelationAction(userID, toUserID int64, actionType string) error
 	// GetFollowList 获取关注列表
-	GetFollowList(userID int64) ([]model.Userinfo,error)
+	GetFollowList(userID int64) ([]model.Userinfo, error)
 	// GetFollowerList 获取粉丝列表
-	GetFollowerList(userID int64)([]model.Userinfo,error)
+	GetFollowerList(userID int64) ([]model.Userinfo, error)
 
-	IsFollow(userId,toUserId int64) (bool,error)
+	IsFollow(userId, toUserId int64) (bool, error)
 }
 
 var Mgr Manager

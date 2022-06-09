@@ -9,25 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
-	"sync/atomic"
 )
-
-// usersLoginInfo use map to store user info, and key is username+password for demo
-// user data will be cleared every time the server starts
-// test data: username=zhanglei, password=douyin
-
-var usersLoginInfo = map[string]model.Userinfo{
-	"zhangleidouyin": {
-		Id:            1,
-		Name:          "zhanglei",
-		FollowCount:   10,
-		FollowerCount: 5,
-		IsFollow:      true,
-	},
-}
-var userIdSequence = int64(1)
-
-// -------
 
 type UserLoginResponse struct {
 	model.Response
@@ -48,7 +30,6 @@ type MyClaims struct {
 }
 
 func Register(c *gin.Context) {
-
 	username := c.Query("username")
 	password := c.Query("password")
 
@@ -80,8 +61,6 @@ func Register(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
-
-	atomic.AddInt64(&userIdSequence, 1)
 
 	c.JSON(http.StatusOK, UserLoginResponse{
 		Response: model.Response{StatusCode: 0},
@@ -138,7 +117,6 @@ func UserInfo(c *gin.Context) {
 		return
 	}
 
-	//user.IsFollow = true
 	user.Password = ""
 
 	c.JSON(http.StatusOK, UserResponse{
