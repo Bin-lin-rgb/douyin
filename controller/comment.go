@@ -26,7 +26,6 @@ func CommentAction(c *gin.Context) {
 	actionType := c.Query("action_type")
 
 	if user, exist := TokenIsValid(token); exist {
-		//发布评论
 
 		text := c.Query("comment_text")
 		videoId := c.Query("video_id")
@@ -38,9 +37,6 @@ func CommentAction(c *gin.Context) {
 			log.Println(err)
 			return
 		}
-
-		////插入视频实现后删除，仅测试用
-		//vid = 2
 
 		comment := model.Comment{
 			Content:     text,
@@ -95,7 +91,7 @@ func CommentList(c *gin.Context) {
 			})
 			return
 		}
-		
+
 		c.JSON(http.StatusOK, CommentListResponse{
 			Response:    model.Response{StatusCode: 0},
 			CommentList: commentList,

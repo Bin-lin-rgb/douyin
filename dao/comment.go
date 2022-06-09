@@ -8,7 +8,7 @@ import (
 )
 
 func (mgr manager) CommentAction(comment model.Comment, actionType string) error {
-	
+
 	tx := mgr.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -28,7 +28,19 @@ func (mgr manager) CommentAction(comment model.Comment, actionType string) error
 			return err
 		}
 	case "2":
-		//没有这个功能
+		//var commentId string
+
+		if err := tx.Model(model.Comment{}).Where("user_id=? AND video_id =?", comment.CommenterId, comment.VideoId).Select("id").Find(&comment).Error; err != nil {
+			log.Println(err)
+			tx.Rollback()
+			return err
+		}
+
+		if err := tx.Delete(&comment, comment.Id).Error; err != nil {
+			log.Println(err)
+			tx.Rollback()
+			return err
+		}
 	default:
 		return errors.New("未知操作类型")
 	}
