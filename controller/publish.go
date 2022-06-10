@@ -55,19 +55,14 @@ func Publish(c *gin.Context) {
 		StatusMsg:  finalName + " uploaded successfully",
 	})
 
-	//root := "http://10.0.2.2:8080/static/"
-	//playUrl := StrBulider(constrant.Root, finalName)
-	//fmt.Println("-------------------", playUrl)
-
 	filePath := StrBulider("./public/", finalName)
 
 	// 此处返回值为./public/image.png 若想直接存数据库就启用
 	_, err = GetSnapshot(filePath, finalName)
 	if err != nil {
-		log.Fatal("--GetSnapshot--:", err)
+		log.Println("--GetSnapshot--:", err)
 	}
 	finalImageName := StrBulider(finalName, ".png")
-	//coverUrl := StrBulider(root, finalImageName)
 
 	video := model.Video{
 		AuthorId:      user.Id,
@@ -119,19 +114,19 @@ func GetSnapshot(videoPath, snapshotPath string) (snapshotName string, err error
 		WithOutput(buf, os.Stdout).
 		Run()
 	if err != nil {
-		log.Fatal("生成缩略图失败：", err)
+		log.Println("生成缩略图失败：", err)
 		return "", err
 	}
 
 	img, err := imaging.Decode(buf)
 	if err != nil {
-		log.Fatal("生成缩略图失败：", err)
+		log.Println("生成缩略图失败：", err)
 		return "", err
 	}
 
 	err = imaging.Save(img, snapshotPath+".png")
 	if err != nil {
-		log.Fatal("生成缩略图失败：", err)
+		log.Println("生成缩略图失败：", err)
 		return "", err
 	}
 

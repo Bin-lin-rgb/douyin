@@ -12,7 +12,6 @@ func (mgr manager) IsExist(username string) (model.Userinfo, error) {
 	result := mgr.db.Model(&model.Userinfo{}).Where("name=?", username).Find(&userinfo)
 
 	return userinfo, result.Error
-
 }
 
 func (mgr manager) GetUserInfo(userId int64) (model.Userinfo, error) {
@@ -24,7 +23,9 @@ func (mgr manager) GetUserInfo(userId int64) (model.Userinfo, error) {
 
 func StrBuilder(first string, finalName string) string {
 	var builder strings.Builder
+
 	builder.WriteString(first)
 	builder.WriteString(finalName)
+
 	return builder.String()
 }

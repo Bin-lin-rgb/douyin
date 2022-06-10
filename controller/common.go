@@ -71,7 +71,9 @@ func TokenIsValid(token string) (model.Userinfo, bool) {
 
 func StrBulider(first string, finalName string) string {
 	var builder strings.Builder
+
 	builder.WriteString(first)
 	builder.WriteString(finalName)
+
 	return builder.String()
 }

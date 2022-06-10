@@ -106,7 +106,6 @@ func Login(c *gin.Context) {
 
 func UserInfo(c *gin.Context) {
 	token := c.Query("token")
-	//user_id := c.Query("user_id")
 
 	user, isvalid := TokenIsValid(token)
 
