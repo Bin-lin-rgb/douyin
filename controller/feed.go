@@ -24,6 +24,9 @@ func Feed(c *gin.Context) {
 	// 可选参数，限制返回视频的最新投稿时间戳，精确到秒，不填表示当前时间
 	latestTimeString := c.Query("latest_time")
 	latestTime, err := strconv.ParseInt(latestTimeString, 10, 64)
+	if err != nil {
+		log.Println(err)
+	}
 
 	videos, err := dao.Mgr.GetAllVideo(latestTime)
 	if err != nil {

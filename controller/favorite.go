@@ -3,6 +3,7 @@ package controller
 import (
 	"douyin/dao"
 	"douyin/model"
+	"douyin/pkg/constrant"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -23,7 +24,7 @@ func FavoriteAction(c *gin.Context) {
 		}
 
 		uid := user.Id
-		
+
 		err = dao.Mgr.FavoriteAction(uid, vid, actionType)
 		if err != nil {
 			log.Println(err)
@@ -48,6 +49,12 @@ func FavoriteList(c *gin.Context) {
 			log.Println(err)
 			c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "获取点赞列表失败，请重试"})
 			return
+		}
+
+		videoLen := len(favoriteList)
+		for i := 0; i < videoLen; i++ {
+			favoriteList[i].PlayUrl = StrBuilder(constrant.Root, favoriteList[i].PlayUrl)
+			favoriteList[i].CoverUrl = StrBuilder(constrant.Root, favoriteList[i].CoverUrl)
 		}
 
 		c.JSON(http.StatusOK, VideoListResponse{

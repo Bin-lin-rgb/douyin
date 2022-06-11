@@ -33,7 +33,6 @@ func Register(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 
-	//token := username + password
 	token, _ := GenToken(username, password)
 
 	// 查找用户是否存在

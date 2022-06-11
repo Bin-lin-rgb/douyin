@@ -50,19 +50,14 @@ func Publish(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, model.Response{
-		StatusCode: 0,
-		StatusMsg:  finalName + " uploaded successfully",
-	})
-
-	filePath := StrBulider("./public/", finalName)
+	filePath := StrBuilder("./public/", finalName)
 
 	// 此处返回值为./public/image.png 若想直接存数据库就启用
 	_, err = GetSnapshot(filePath, finalName)
 	if err != nil {
 		log.Println("--GetSnapshot--:", err)
 	}
-	finalImageName := StrBulider(finalName, ".png")
+	finalImageName := StrBuilder(finalName, ".png")
 
 	video := model.Video{
 		AuthorId:      user.Id,
@@ -76,6 +71,11 @@ func Publish(c *gin.Context) {
 	if err != nil {
 		fmt.Println("InsertToVideo error:", err)
 	}
+
+	c.JSON(http.StatusOK, model.Response{
+		StatusCode: 0,
+		StatusMsg:  finalName + " uploaded successfully",
+	})
 }
 
 func PublishList(c *gin.Context) {
@@ -105,7 +105,7 @@ func PublishList(c *gin.Context) {
 }
 
 func GetSnapshot(videoPath, snapshotPath string) (snapshotName string, err error) {
-	snapshotPath = StrBulider("./public/", snapshotPath)
+	snapshotPath = StrBuilder("./public/", snapshotPath)
 	frameNum := 1
 	buf := bytes.NewBuffer(nil)
 	err = ffmpeg.Input(videoPath).
